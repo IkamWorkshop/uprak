@@ -1,0 +1,87 @@
+import tkinter as tk
+from tkinter import messagebox
+
+kesempatan = 3
+
+def login():
+    global kesempatan
+
+    usn = userEntry.get()
+    pw = passEntry.get()
+
+    if not usn or not pw:
+        messagebox.showerror("Error", "Harap isi data untuk login")
+        return
+    
+    if usn == "icham" and pw == "bootcampX":
+        messagebox.showinfo("Login berhasil", "Selamat datang")
+        frameLogin.destroy()
+        buka_kasir()
+    else:
+        kesempatan-=1
+        messagebox.showwarning("Peringatan", "pw atau usn salah\nsisa kesempatan: ", kesempatan)
+        if kesempatan == 0:
+            messagebox.showerror("Error", "sisa kesempatan telah habis")
+            frameLogin.destroy()
+
+def buka_kasir():
+    frameKasir = tk.Tk()
+    frameKasir.geometry("275x370")
+    frameKasir.title("invoice kasir")
+
+    def proses():
+        try:
+            nama = namaEntry.get()
+            barang = barangEntry.get()
+            jumlah = int(jumlahEntry.get())
+            harga = int(hargaEntry.get())
+            uang = int(uangEntry.get())
+
+            total = jumlah * harga
+            kembalian = uang - total
+
+            if 0 > kembalian:
+                messagebox.showerror("Error", "Uang tidak cukup")
+                return
+            
+            messagebox.showinfo("Struk Pembayaran",
+                                f"Nama pembeli: {nama}\n"
+                                f"Nama barang: {barang}\n"
+                                f"Jumlah barang: {jumlah:,}\n"
+                                f"Harga barang: {harga:,}\n"
+                                f"Uang pembeli: {uang:,}\n"
+                            )
+            
+        except ValueError:
+            messagebox.showwarning("Error", "Tolong masukan data dengan benar")
+
+    label = ["Nama pembeli: ", "Nama barang: ", "Jumlah barang: ", "Harga: ", "Total: ", "Uang anda: "]
+    entries = []      
+
+    for i, labelTeks in enumerate(label):
+        tk.Label(frameKasir, text=labelTeks).grid(row=i * 2, column=0, sticky="w", padx=10, pady=5)
+        entry = tk.Entry(frameKasir, width=30)
+        entry.grid(row=i*2+1, column=0, padx=10, pady=5)
+        entries.append(entry)
+
+    namaEntry, barangEntry, jumlahEntry, hargaEntry, uangEntry = entries
+
+    tk.Button(text="Proses", command=proses, width=20).grid(row=10, column=0, pady=20)
+
+    frameKasir.mainloop()
+
+frameLogin = tk.Tk()
+frameLogin.geometry("300x150")
+frameLogin.title("Login")
+
+tk.Label(frameLogin, text="Username:").grid(row=0, column=0,padx=10,pady=10,sticky="E")
+userEntry = tk.Entry(frameLogin, width=20)
+userEntry.grid(row=0, column=1, pady=10)
+
+tk.Label(frameLogin, text="Password:").grid(row=1, column=0,padx=10,pady=10,sticky="E")
+passEntry = tk.Entry(frameLogin,show="*", width=20)
+passEntry.grid(row=1, column=1, pady=10)
+
+tk.Button(text="Login", command=login, width=16).grid(row=2, column=0, columnspan=2, pady=10)
+
+frameLogin.mainloop()
